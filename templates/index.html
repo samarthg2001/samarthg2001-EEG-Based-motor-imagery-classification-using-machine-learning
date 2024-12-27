@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor imagery  Classification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+</head>
+<body><center>
+<header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="College Logo" class="logo" style="mix-blend-mode:multiply;">
+            <h1>B.L.D.E.A's V.P. Dr.P.G.Halakatti College of Engineering and Technology Vijayapura</h1>
+            <h2>EEG BASED MOTOR IMAGERY CLASSIFICATION USING MACHINE LEARNING</h2>
+        </header>
+            <div class="card" style="align-items: center;">
+            <div class="card-body" >   <form id="uploadForm">
+        <input type="file" id="uploadDataset" accept=".mat">
+        <button type="submit">Upload</button>
+    </form>            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Classification Algorithms</h5>
+                <div class="btn-group">
+                    <button  id="xgboost"type="button" class="btn btn-outline-primary">xgboost</button>
+                    <button id="SVM" type="button" class="btn btn-outline-success">SVM</button>
+                    <button id="naiveBayes" type="button" class="btn btn-outline-warning">Navie Bayes</button>
+                    <button id="logisticRegression" type="button" class="btn btn-outline-info">LogisticRegression</button>
+                    <button id="knn" type="button" class="btn btn-outline-dark">knn</button>
+                </div>
+            </div>
+        </div>
+        <div id="result" class="mt-5">
+            <h4>Results:</h4>
+            <div id="output"></div>
+        </div>
+        <div id="model-results" class="results"></div>
+        <div id="model-images" class="image-container"></div>
+    </div>
+    <script>
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('uploadDataset');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a .mat file to upload.');
+                return;
+            }
+
+            // Create a FormData object to send the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(result.message); // Success message
+                } else {
+                    console.error('Error uploading file:', response.statusText);
+                }
+            } catch (error) {
+                console.error('An error occurred:', error);
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById('knn').addEventListener('click', async () => {
+            try {
+                let response = await fetch('/KNN_model', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let results = await response.json();
+                let resultsDiv = document.getElementById('model-results');
+                let imagesDiv = document.getElementById('model-images');
+
+                resultsDiv.innerHTML = ''; // Clear previous results
+                imagesDiv.innerHTML = ''; // Clear previous images
+
+                // Display textual data
+                resultsDiv.innerHTML += `<p>${results.accuracy}</p>`;
+                resultsDiv.innerHTML += `<pre>${results.confusion_matrix}</pre>`;
+                resultsDiv.innerHTML += `<pre>${results.classification_report}</pre>`;
+
+                // Display images
+                results.images.forEach(imgData => {
+                    let imgElement = document.createElement('img');
+                    imgElement.src = imgData;
+                    imagesDiv.appendChild(imgElement);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById('SVM').addEventListener('click', async () => {
+            try {
+                let response = await fetch('/run_model', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let results = await response.json();
+                let resultsDiv = document.getElementById('model-results');
+                let imagesDiv = document.getElementById('model-images');
+
+                resultsDiv.innerHTML = ''; // Clear previous results
+                imagesDiv.innerHTML = ''; // Clear previous images
+
+                // Display textual data
+                resultsDiv.innerHTML += `<p>${results.accuracy}</p>`;
+                resultsDiv.innerHTML += `<pre>${results.confusion_matrix}</pre>`;
+                resultsDiv.innerHTML += `<pre>${results.classification_report}</pre>`;
+
+                // Display images
+                results.images.forEach(imgData => {
+                    let imgElement = document.createElement('img');
+                    imgElement.src = imgData;
+                    imagesDiv.appendChild(imgElement);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+        document.getElementById('xgboost').addEventListener('click', async () => {
+            try {
+                let response = await fetch('/xgboost', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let results = await response.json();
+                let resultsDiv = document.getElementById('model-results');
+                let imagesDiv = document.getElementById('model-images');
+
+                resultsDiv.innerHTML = ''; // Clear previous results
+                imagesDiv.innerHTML = ''; // Clear previous images
+
+                // Display textual data
+                resultsDiv.innerHTML += `<p>${results.accuracy}</p>`;
+                resultsDiv.innerHTML += `<pre>${results.confusion_matrix}</pre>`;
+                resultsDiv.innerHTML += `<pre>${results.classification_report}</pre>`;
+
+                // Display images
+                results.images.forEach(imgData => {
+                    let imgElement = document.createElement('img');
+                    imgElement.src = imgData;
+                    imagesDiv.appendChild(imgElement);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+
+
+        document.getElementById('naiveBayes').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/naiveBayes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const results = await response.json();
+                const resultsDiv = document.getElementById('model-results');
+                const imagesDiv = document.getElementById('model-images');
+
+                resultsDiv.innerHTML = ''; // Clear previous results
+                imagesDiv.innerHTML = ''; // Clear previous images
+
+                // Display textual data
+                resultsDiv.innerHTML += `<p>${results.accuracy}</p>`;
+                resultsDiv.innerHTML += `<pre>${results.confusion_matrix}</pre>`;
+                resultsDiv.innerHTML += `<pre>${results.classification_report}</pre>`;
+
+                // Display images
+                results.images.forEach(imgData => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgData;
+                    imagesDiv.appendChild(imgElement);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+
+        document.getElementById('logisticRegression').addEventListener('click', async () => {
+            try {
+                let response = await fetch('/logisticRegression', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let results = await response.json();
+                let resultsDiv = document.getElementById('model-results');
+                let imagesDiv = document.getElementById('model-images');
+
+                resultsDiv.innerHTML = ''; // Clear previous results
+                imagesDiv.innerHTML = ''; // Clear previous images
+
+                // Display textual data
+                resultsDiv.innerHTML += `<p>${results.accuracy}</p>`;
+                resultsDiv.innerHTML += `<pre>${results.confusion_matrix}</pre>`;
+                resultsDiv.innerHTML += `<pre>${results.classification_report}</pre>`;
+
+                // Display images
+                results.images.forEach(imgData => {
+                    let imgElement = document.createElement('img');
+                    imgElement.src = imgData;
+                    imagesDiv.appendChild(imgElement);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+
+
+    </script>
+</center></body>
+</html>

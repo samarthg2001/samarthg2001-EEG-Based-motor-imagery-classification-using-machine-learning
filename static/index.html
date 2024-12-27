@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anemia Classification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+</head>
+<body><center>
+<header>
+    <img src="/logo.png" alt="College Logo" class="logo" style="mix-blend-mode:multiply;">
+            <h1>B.L.D.E.A's V.P. Dr.P.G.Halakatti College of Engineering and Technology Vijayapura</h1>
+            <h2>EEG BASED MOTOR IMAGERY CLASSIFICATION USING MACHINE LEARNING</h2>
+        </header>
+            <div class="card" style="align-items: center;">
+            <div class="card-body" >
+                <h5 class="card-title">Upload Dataset</h5>
+                <input type="file" id="uploadDataset" class="form-control-file">
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Classification Algorithms</h5>
+                <div class="btn-group">
+                    <button  id="xgboost"type="button" class="btn btn-outline-primary">xgboost</button>
+                    <button id="SVM" type="button" class="btn btn-outline-success">SVM</button>
+                    <button id="naiveBayes" type="button" class="btn btn-outline-warning">Navie Bayes</button>
+                    <button id="logisticRegression" type="button" class="btn btn-outline-info">LogisticRegression</button>
+                    <button id="KNN" type="button" class="btn btn-outline-dark">KNN</button>
+                </div>
+            </div>
+        </div>
+        <div id="result" class="mt-5">
+            <h4>Results:</h4>
+            <div id="output"></div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('uploadDataset').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('http://127.0.0.1:5000/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    alert("File uploaded successfully");
+                } else {
+                    response.text().then(text => alert("File upload failed: " + text));
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("File upload failed: " + error);
+            });
+        });
+
+        const classifiers = ['xgboost', 'randomForest', 'svm', 'mlp', 'decisionTree', 'naiveBayes', 'logisticRegression', 'lstm', 'deepBeliefNetwork', 'lightGBM'];
+
+        classifiers.forEach(classifier => {
+            document.getElementById(classifier).addEventListener('click', function() {
+                classify(classifier);
+            });
+        });
+
+        function classify(algorithm) {
+            fetch('http://127.0.0.1:5000/classify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ algorithm: algorithm }),
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text().then(text => Promise.reject(text));
+                }
+            }).then(data => {
+                document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Classification failed: " + error);
+            });
+        }
+    </script>
+</center></body>
+</html>
